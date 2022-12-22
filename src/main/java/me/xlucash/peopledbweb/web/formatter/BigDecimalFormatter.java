@@ -12,11 +12,11 @@ import java.util.Locale;
 public class BigDecimalFormatter implements Formatter<BigDecimal> {
     @Override
     public BigDecimal parse(String text, Locale locale) throws ParseException {
-        return new BigDecimal(text);
+        return null;
     }
 
     @Override
     public String print(BigDecimal object, Locale locale) {
-        return NumberFormat.getCurrencyInstance(locale).format(object);
+        return NumberFormat.getCurrencyInstance().format(object);
     }
 }
