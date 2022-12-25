@@ -38,4 +38,6 @@ public class Person {
     @NotNull(message = "Salary must be specified")
     private BigDecimal salary;
 
+    private String photoFilename;
+
 }
