@@ -35,9 +35,9 @@
                 <td th:text="${person.firstName}">Otto</td>
                 <td th:text="${#temporals.format(person.dob, 'dd MMMM, yyyy')}">@mdo</td>
                 <td th:text="${person.email}" class="d-sm-none d-md-table-cell">@mdo</td>
-                <td th:text="${{person.salary}}">@mdo</td>
+                <td class="text-end" th:text="${{person.salary}}">@mdo</td>
 <!--                <td th:text="${person.photoFilename}">@mdo</td>-->
-                <td><img th:src="@{/people/images/{filename}(filename=${person.photoFilename})}" height="32px" width="32px"/></td>
+                <td><img th:if="${person.photoFilename}" th:src="@{/people/images/{filename}(filename=${person.photoFilename})}" height="32px" width="32px"/></td>
             </tr>
             <tr th:remove="all">
                 <th scope="row">2</th>
@@ -55,6 +55,11 @@
         <button type="submit" name="edit" value="true" class="btn btn-info mb-5 me-2">Edit</button>
         <button type="submit" name="delete" value="true" class="btn btn-danger mb-5">Delete</button>
     </form>
+
+    <div class="alert alert-danger" role="alert" th:text="${errorMsg}" th:if="${errorMsg}">
+        A simple danger alert—check it out!
+    </div>
+
     <h2>Person Form</h2>
     <form method="post" th:object="${person}" novalidate enctype="multipart/form-data">
         <div class="mb-3">

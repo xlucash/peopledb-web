@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import me.xlucash.peopledbweb.biz.model.Person;
 import me.xlucash.peopledbweb.data.FileStorageRepository;
 import me.xlucash.peopledbweb.data.PersonRepository;
+import me.xlucash.peopledbweb.exception.StorageException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -58,15 +59,20 @@ public class PeopleController {
     }
 
     @PostMapping
-    public String savePerson(@Valid Person person, Errors errors, @RequestParam("photoFilename") MultipartFile photoFile) throws IOException {
+    public String savePerson(Model model,@Valid Person person, Errors errors, @RequestParam("photoFilename") MultipartFile photoFile) throws IOException {
         log.info(person);
         log.info("Filename " + photoFile.getOriginalFilename());
         log.info("File size: "+ photoFile.getSize());
         log.info("Errors: "+ errors);
         if (!errors.hasErrors()) {
-            fileStorageRepository.save(photoFile.getOriginalFilename(), photoFile.getInputStream());
-            personRepository.save(person);
-            return "redirect:people";
+            try {
+                fileStorageRepository.save(photoFile.getOriginalFilename(), photoFile.getInputStream());
+                personRepository.save(person);
+                return "redirect:people";
+            } catch (StorageException e) {
+                model.addAttribute("errorMsg", "System is currently unable to accept photo files at this time");
+                return "people";
+            }
         }
         return "people";
     }
