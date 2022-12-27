@@ -3,6 +3,7 @@ package me.xlucash.peopledbweb.web.controller;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import me.xlucash.peopledbweb.biz.model.Person;
+import me.xlucash.peopledbweb.biz.service.PersonService;
 import me.xlucash.peopledbweb.data.FileStorageRepository;
 import me.xlucash.peopledbweb.data.PersonRepository;
 import me.xlucash.peopledbweb.exception.StorageException;
@@ -31,10 +32,12 @@ public class PeopleController {
             """;
     private PersonRepository personRepository;
     private FileStorageRepository fileStorageRepository;
+    private PersonService personService;
 
-    public PeopleController(PersonRepository personRepository, FileStorageRepository fileStorageRepository) {
+    public PeopleController(PersonRepository personRepository, FileStorageRepository fileStorageRepository, PersonService personService) {
         this.personRepository = personRepository;
         this.fileStorageRepository = fileStorageRepository;
+        this.personService=personService;
     }
     @ModelAttribute("people")
     public Iterable<Person> getPeople() {
@@ -66,8 +69,7 @@ public class PeopleController {
         log.info("Errors: "+ errors);
         if (!errors.hasErrors()) {
             try {
-                fileStorageRepository.save(photoFile.getOriginalFilename(), photoFile.getInputStream());
-                personRepository.save(person);
+                personService.save(person, photoFile.getInputStream());
                 return "redirect:people";
             } catch (StorageException e) {
                 model.addAttribute("errorMsg", "System is currently unable to accept photo files at this time");
@@ -81,7 +83,7 @@ public class PeopleController {
     public String deletePeople(@RequestParam Optional<List<Long>> selections) {
         log.info(selections);
         if (selections.isPresent()) {
-            personRepository.deleteAllById(selections.get());
+            personService.deleteAllById(selections.get());
         }
         return "redirect:people";
     }
